@@ -4,8 +4,8 @@
 As I am improving this game later on for the difficulties, tutorials and storyline, comments are very welcomed still!!
 
 An earlier version of is game in pygame named [qShooter can be found here](https://github.com/wslu42/qShooter).
-This work is inspired by QPong made by qiskit advocate Junye Huang, a quantum variant of classical Pong. [Play QPong here](https://alfa871212.itch.io/qpong).
 
+This work is inspired by QPong made by qiskit advocate Junye Huang, a quantum variant of classical Pong. [Play QPong here](https://alfa871212.itch.io/qpong).
 
 
 #### Gameplay video walk through
