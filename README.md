@@ -24,6 +24,7 @@ As an inspiring and pinoeering engineer, Da Vinci has inspired artists, architec
 The measurement part of in this code is designed such that counts won't be too high that user can basically shoot down anything with H gates.
 1. Has only 16 shots each time when user load the circuit with space bar.
 2. For states with counts <4, set the count of that state to 0.
+3. This will prevent the player from exploiting hadamard gate to put all qubits in superposition and shoot lasers from all 8 columns.
 
 ## A detail walkthrough for gameplay
 ![Picture1](https://user-images.githubusercontent.com/29524895/135765697-42ebe447-65fb-43d9-8267-45b225a4ad44.png)
