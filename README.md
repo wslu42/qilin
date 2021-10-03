@@ -15,5 +15,5 @@ This work is inspired by QPong made by qiskit advocate Junye Huang, a quantum va
 
 
 ## Story in this game
-[qilin](https://user-images.githubusercontent.com/29524895/135762834-b42ec035-03ec-4d74-9777-e0e5ac7cfd13.png)
+https://user-images.githubusercontent.com/29524895/135762834-b42ec035-03ec-4d74-9777-e0e5ac7cfd13.png
 
