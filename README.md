@@ -8,10 +8,10 @@ This work is inspired by QPong made by qiskit advocate Junye Huang, a quantum va
 
 
 
-## Gameplay video walk through
+### Gameplay video walk through
 
 
-## Play from you browser [at itch.io here](https://wslu42.itch.io/qilin).
+### Play from you browser [at itch.io here](https://wslu42.itch.io/qilin).
 
 
 ## Story in this game
