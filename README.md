@@ -1,5 +1,5 @@
 # Qilin
-![qilin](https://user-images.githubusercontent.com/29524895/135762834-b42ec035-03ec-4d74-9777-e0e5ac7cfd13.png)
+![qilin_0](https://user-images.githubusercontent.com/29524895/135959539-cb2a1d46-d2c4-4c77-b43d-ef73836a74d5.gif)
 #### Play Qilin from you browser [at itch.io here](https://wslu42.itch.io/qilin).
 As I am improving this game to add the increasing level difficulties, tutorials and storyline, comments and/or feedbacks are very welcomed!
 
