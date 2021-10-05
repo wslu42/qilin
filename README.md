@@ -22,7 +22,7 @@ As an inspiring and pioneering engineer, Da Vinci has inspired artists, architec
 
 ![qilin_3](https://user-images.githubusercontent.com/29524895/135960047-1ed86aa1-f085-4c79-8d6d-92b98f925857.gif)
 
-**Train your quantum circuit intuition with Qilin and happt shooting everyone!**
+**Make quantum circuit your muscle memory and HAPPY SHOOTING!**
 
 #### More behind the scene
 The measurement part of in this code is designed such that counts won't be too high that user can basically shoot down anything with H gates.
