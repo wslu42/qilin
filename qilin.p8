@@ -2,7 +2,7 @@ pico-8 cartridge // http://www.pico-8.com
 version 32
 __lua__
 --------- microqiskit ---------
----- math.p8 ----
+-- math.p8
 math = {}
 math.pi = 3.14159
 math.max = max
@@ -23,7 +23,7 @@ os = {}
 function os.time()
 end
 -------------------------------
----- microqiskit.lua ----
+------- microqiskit.lua -------
 -- this code is part of qiskit.
 -- copyright ibm 2020
 math.randomseed(os.time())
@@ -277,10 +277,11 @@ function simulate (qc, get, shots)
 end
 
 -->8
--- func_cust
--------------------------------
+---------- func_cust ----------
 function wait(t) 
- for i = 1,t*33 do flip() end end
+  for i = 1,t*33 do flip() end
+end
+
 -------------------------------
 function qcmeas(qc,llm)
   for i = 0,2,1 do
@@ -302,6 +303,25 @@ function qcmeas(qc,llm)
   return st_sig
 end
 
+--------------------------------
+function tb2str (src, s2t)
+ -- convert tb_of_str to str
+ -- reverse action by s2t="s2t"
+  local tar = -1
+  if s2t=="s2t" then
+    tar = {}
+    for i = 1,#src do
+      tar[i] = sub(src,i,i)
+    end
+  else
+    tar = ""
+    for i,v in pairs(src) do
+      tar = tar..v
+    end
+  end
+  return tar
+end
+--------------------------------
 function bstrtb2dtb(bstrtb)
   valtb = {}
   for i,v in pairs(bstrtb) do
@@ -314,36 +334,6 @@ function bstrtb2dtb(bstrtb)
   return valtb
 end
 --------------------------------
-function tbsort(tb)
- for i=1,#tb do
-  local j = i
-  while j>1 and tb[j-1]>tb[j] do
-   tb[j],tb[j-1] = tb[j-1],tb[j]
-   j = j - 1
-  end
- end
-end
-
-function tbcmpr(a,b)
- tbsort(a)
- tbsort(b)
- if (#a!=#b) return false
-	for i=1,#a do
-		if (a[i]!=b[i]) return false
-	end
-	return true
-end
-
-function tbkill(enemy,target)
-	local e={}
-	for v in all(enemy) do
-	 if (not tbcmpr(v,target)) add(e,v)
-	end
-	return e
-end
-
---------------------------------
-
 function rintx(n,o,s)
  if (n==nil) n=8
  if (o==nil) o=6
@@ -351,7 +341,28 @@ function rintx(n,o,s)
  -- return a pure integer
  return (flr(rnd(n))+o)*s
 end
+--------------------------------
+function tbsort(tb)
+  for i=1,#tb do
+    local j = i
+    while j>1 and tb[j-1]>tb[j] do
+      tb[j],tb[j-1] = tb[j-1],tb[j]
+      j = j - 1
+    end
+  end
+end
+--------------------------------
+function tbcmpr(a,b)
+  tbsort(a)
+  tbsort(b)
+  if (#a!=#b) return false
+	for i=1,#a do
+		if (a[i]!=b[i]) return false
+	end
+	return true
+end
 
+--------------------------------
 function elgen(eltype, tbas)
   local el={}
   if eltype=='2enemy' then
@@ -388,238 +399,6 @@ function elgen(eltype, tbas)
   return el
 end
 
---------------------------------
-function brint(text,x,y,c)
-  for dx = -1,1 do
-   for dy = -1,1 do
-    print(text,x+dx,y+dy,0) 
-   end
-  end
-  print(text,x,y,c) 
-end
---------------------------------
-
-function tb2str (src, s2t)
- -- convert tb_of_str to str
- -- reverse action by s2t="s2t"
-  local tar = -1
-  if s2t=="s2t" then
-    tar = {}
-    for i = 1,#src do
-      tar[i] = sub(src,i,i)
-    end
-  else
-    tar = ""
-    for i,v in pairs(src) do
-      tar = tar..v
-    end
-  end
-  return tar
-end
-
-function as_bits (num,bits,idn)
- -- convert decimal to bintable
- -- set idn="s" to binstring
-  local bitstring = {}
-  for index = bits, 1, -1 do
-    b = num - flr(num/2)*2
-    num = flr((num - b) / 2)
-    bitstring[index] = b
-  end
-  if idn=="s" then
-    bitstring = tb2str(bitstring)
-  end
-  return bitstring
-end
-
-function bin2dec(src)
-  -- convert bin tb or bin str to a decimal number
-  local n,str = 0, ""
-
-  if type(src)=="table" then
-    str = tb2str(src)
-  else str = src end
-
-  for i = 1,#str do 
-    n+=tonum(sub(str,i,i))*2^(#str-i)
-  end 
-  return(n)
-end
-
-function bint2dect(b,sort)
-  local d = {}
-
-  for i,v in pairs(b) do
-    local n = {}
-    for j,u in pairs(v) do
-      n[j] = bin2dec(u)
-    end
-
-    if #n==1 then
-      d[i] = tostr(n[1])
-    elseif #n==2 and sort then
-      d[i] = min(n[1],n[2])..max(n[1],n[2])
-    elseif #n==0 then
-    else
-      d[i] = n[1]..n[2]
-    end
-  end
-  return(d)
-end
-
-function dect2bint(d)
-  local b = {}
-  for i,v in pairs(d) do
-    local a1 = {}
-    for j=1,#v do
-    a0 = as_bits(sub(v,j,j),3,"_")
-    a1[j] = a0
-    end
-    b[i] = a1
-  end
-  return b
-end
-
--->8
--- func_game
--------------------------------
--- dialogue text box library by oli414.
-function dtb_init(n) 
-  dtb_q={}
-  dtb_f={}
-  dtb_n=3 
-  
-  if n then 
-   dtb_n=n 
-  end
-  
-  _dtb_c()
-end
-function dtb_update()
-  if #dtb_q>0 then 
-      if dtb_c==0 then 
-          dtb_c=1 
-      end 
-      local z,x,q,c 
-      z=#dtb_d 
-      x=dtb_q[1]
-      q=#dtb_d[z]
-      c=q>=#x[dtb_c]
-      
-      if c and dtb_c>=#x then
-          if btnp(🅾️) then 
-              if dtb_f[1]~=0 then 
-                  dtb_f[1]()
-              end 
-              del(dtb_f,dtb_f[1])
-              del(dtb_q,dtb_q[1])_dtb_c()
-              sfx(12)
-              return 
-          end 
-      elseif dtb_c>0 then 
-          dtb_l-=1 
-          if not c then 
-              if dtb_l<=0 then 
-                  local v,h 
-                  v=q+1 
-                  h=sub(x[dtb_c],v,v)
-                  dtb_l=1 
-                  if h~=" " then 
-                      sfx(11)
-                  end 
-                  if h=="." then 
-                      dtb_l=6 
-                  end 
-                  dtb_d[z]=dtb_d[z]..h 
-              end 
-              if btnp(🅾️) then 
-                  dtb_d[z]=x[dtb_c]
-              end 
-          else 
-              if btnp(🅾️) then 
-                  _dtb_l()
-              end 
-          end 
-      end 
-  end 
-end
-function dtb_draw(color,sp,x)
-  if #dtb_q>0 then 
-    local z,o 
-    z=#dtb_d 
-    o=0 
-    if dtb_c<z then 
-        o=z-dtb_c 
-    end 
-    if (color==nil) color = 5
-    rectfill(2-1,125-z*8,125-7,125,color)
-    spr(sp,x,77,3,3)
-      
-    if dtb_c>0 and #dtb_d[#dtb_d]==#dtb_q[1][dtb_c] then 
-        brint("\x8e",118-7,120-0,7)
-    end 
-    
-    for i=1,z do 
-        brint(dtb_d[i],4,i*8+119-(z+o)*8,7)
-    end 
-  end 
-end
-function dtb_disp(t,c)
-  local s,l,w,h,u
-  s={}
-  l=""
-  w=""
-  h=""
-  u=function()	
-      if #w+#l>29 then 
-        add(s,l) l="" 
-      end 
-      l=l..w
-      w=""
-    end 
-
-  for i=1,#t do
-    h=sub(t,i,i)
-    w=w..h
-    if h==" " then 
-      u()
-    elseif #w>28 then
-      w=w.."-"
-      u()
-    end
-  end
-
-  u()
-
-  if l~="" then
-    add(s,l)
-  end
-
-  add(dtb_q,s)
-
-  if c==nil then 
-    c=0 
-  end 
-
-  add(dtb_f,c)
-end
-function _dtb_c()
-  dtb_d={}
-  for i=1,dtb_n do
-      add(dtb_d,"")
-  end
-  dtb_c=0
-  dtb_l=0
-end
-function _dtb_l()
-  dtb_c+=1
-  for i=1,#dtb_d-1 do
-      dtb_d[i]=dtb_d[i+1]
-  end
-  
-  dtb_d[#dtb_d]=""
-  sfx(12)
-end
 -------------------------------
 function ani_init(anitb,
   anisec,
@@ -637,6 +416,7 @@ function ani_init(anitb,
   for i=1,anifm%#anitb do
   add(fmtb,fmdark) end
 end
+--------------------------------
 function ani_draw(ani_act,x,y)
   if ani_ini then fmct+=1
   else fmct=0 end
@@ -651,7 +431,10 @@ function ani_draw(ani_act,x,y)
     ani_ini=false
   end
 end
--------------------------------
+
+
+-->8
+------------ menu_ ------------
 function menu_init()
   menu={x=16, y=32, w=96,
         h=60, m=8 , offset=0,
@@ -664,7 +447,16 @@ function menu_init()
   for i=8,13 do add(anitb,i) end
   ani_init(anitb, 1, 21)
 
+		stars={}
+ 	for i=1,16 do
+	 	add(stars,{x=rnd(128),
+		 											y=rnd(128),
+			 										d=rnd(2)+1,
+			 										c=rnd(2)+5})
+	 end
+
 end
+-------------------------------
 function menu_update()
   dy = 0
   if (btnp(⬇️)) dy += menu.s sfx(13)
@@ -672,9 +464,20 @@ function menu_update()
   menu.sel_y += dy
   if (menu.sel_y == menu.y) menu.sel_y=menu.y+menu.s*3
   if (menu.sel_y == menu.y+menu.s*4) menu.sel_y=menu.y+menu.s
+
+	 for st in all(stars) do
+	 	st.y+=st.d
+	 	if (st.y>128) st.y=0 st.x=rnd(128)
+	 end
+
 end
+-------------------------------
 function menu_draw()
   cls()
+  for st in all(stars) do
+		 pset(st.x,st.y,st.c)
+		end
+  
   pal(3,5)  pal(5,1)  pal(6,1) 
   pal(7,13) pal(8,2)  pal(9,2)
   pal(10,4) pal(11,3) pal(12,3)
@@ -737,22 +540,14 @@ function menu_draw()
   end
 end
 
--------------------------------
+-->8
+------------ stor_ ------------
 function stor_init()
 
   dtb_init() -- numlines=3
   stor={}
-  -- stor.op = { "the quantum interference lasing neutralizer, or qilin for short, is a defense system which was discovered near taiwan island on the seabed of philippine sea in 2142. this ancient device comes with two parts, a dialing interface and a laser actuator.",
-  --             "an weaponized ancient laser came with two parts?",
-  --             "yes. unlike contemporary solid state lasers, the civilization lived on the taiwan island several thousands years ago seems to be able to harvest extra energies from radioactive ions and weaponized it. my team has managed to recover the laser actuator by replacing the ion core with strontium-90 which was a direct biproduct from our nuclear fission plants. the dialing pad, however, requires sophisticated quantum operations which was similar to the old gate-based logic when quantum computation was firstly developed during the nisq-era more than a hundred years ago.",
-  --             "great, an ancient defense system with a vintage control interface…",
-  --             "i wish we have better options. i have only heard of this technology when I was writing a review article as a graduate student, but I will try my best to show you some working principles. and unfortunately you will have to improvise during the battle. are you up for a quick tutorial now?",
-  --             "i think i still remember how to program a nisq quantum computer so let us get started",
-  --             "any instruction will be helpful.",
-  --             "ok so here is the dialing panel, or the quantum composer as how the ancients are calling it. now suppose we would like to initiate a laser at the left most position marked as three pink bars, we will need to input x gates on all qubit terminals by pressing z+up arrow key in front of each qubits. Try it out yourselves.",
-  --           }
   stor.op = {
-  "welcome to the nisq era, this is daedalus and i am your guide today.",
+  "welcome to the quantum da vinci program, _qdav_ for short. this is daedalus and i am your guide today.",
   "today we are going to test our newly developed quantum interference lasing neutralizer, or _qilin_ for short.",
   "it is a defense system prototype comes with two parts, (1) a dialing interface and (2) a coherent high power laser actuator.",
   "the dialing interface marked as _qc cmp_ in front of you used the ancient circuit composer technique, which accepts quantum gates as operations on a 3-qubit system, marked as qubit-2-1-0 from left to right.",
@@ -771,10 +566,16 @@ function stor_init()
   "next time you may skip this tutorial by choosing the _survival_ mode at the opening menu.",
   "please go ahead and try it out.",
   "happy shooting."}
-  
-  
-  --             "",
+  -- stor.op = { "the quantum interference lasing neutralizer, or qilin for short, is a defense system which was discovered near taiwan island on the seabed of philippine sea in 2142. this ancient device comes with two parts, a dialing interface and a laser actuator.",
+  --             "an weaponized ancient laser came with two parts?",
+  --             "yes. unlike contemporary solid state lasers, the civilization lived on the taiwan island several thousands years ago seems to be able to harvest extra energies from radioactive ions and weaponized it. my team has managed to recover the laser actuator by replacing the ion core with strontium-90 which was a direct biproduct from our nuclear fission plants. the dialing pad, however, requires sophisticated quantum operations which was similar to the old gate-based logic when quantum computation was firstly developed during the nisq-era more than a hundred years ago.",
+  --             "great, an ancient defense system with a vintage control interface…",
+  --             "i wish we have better options. i have only heard of this technology when I was writing a review article as a graduate student, but I will try my best to show you some working principles. and unfortunately you will have to improvise during the battle. are you up for a quick tutorial now?",
+  --             "i think i still remember how to program a nisq quantum computer so let us get started",
+  --             "any instruction will be helpful.",
+  --             "ok so here is the dialing panel, or the quantum composer as how the ancients are calling it. now suppose we would like to initiate a laser at the left most position marked as three pink bars, we will need to input x gates on all qubit terminals by pressing z+up arrow key in front of each qubits. Try it out yourselves.",
   --           }
+  
   stor.linn = 1
   stor.sp = {72,75}
   stor.spx = {1,95}
@@ -787,48 +588,162 @@ function stor_init()
   stor.resp = {"yes", "no"}
   stor.sel = true
 end
-------------------------------- 🅾️❎⬇️⬆️⬅️➡️
 
---todo
+--------------------------------
+function brint(text,x,y,c)
+  for dx = -1,1 do
+   for dy = -1,1 do
+    print(text,x+dx,y+dy,0) 
+   end
+  end
+  print(text,x,y,c) 
+end
 
-----note: data structure
--- gttb: {{x,h},{c02,v12},{}}
--- /bt: "111"
--- pse/pss: {"111","010"}
--- enle/blle: {s=  7,dy=bldy,
---            px=pss, y=16*8}
--- entb/bltb: {enle,enle,enle}
+--------------------------------
+-- dialogue text box library by oli414.
+function dtb_init(n) 
+  dtb_q={}
+  dtb_f={}
+  dtb_n=3 
+  
+  if n then 
+   dtb_n=n 
+  end
+  
+  _dtb_c()
+end
+--------------------------------
+function dtb_update()
+  if #dtb_q>0 then 
+      if dtb_c==0 then 
+          dtb_c=1 
+      end 
+      local z,x,q,c 
+      z=#dtb_d 
+      x=dtb_q[1]
+      q=#dtb_d[z]
+      c=q>=#x[dtb_c]
+      
+      if c and dtb_c>=#x then
+          if btnp(🅾️) then 
+              if dtb_f[1]~=0 then 
+                  dtb_f[1]()
+              end 
+              del(dtb_f,dtb_f[1])
+              del(dtb_q,dtb_q[1])_dtb_c()
+              sfx(12)
+              return 
+          end 
+      elseif dtb_c>0 then 
+          dtb_l-=1 
+          if not c then 
+              if dtb_l<=0 then 
+                  local v,h 
+                  v=q+1 
+                  h=sub(x[dtb_c],v,v)
+                  dtb_l=1 
+                  if h~=" " then 
+                      sfx(11)
+                  end 
+                  if h=="." then 
+                      dtb_l=6 
+                  end 
+                  dtb_d[z]=dtb_d[z]..h 
+              end 
+              if btnp(🅾️) then 
+                  dtb_d[z]=x[dtb_c]
+              end 
+          else 
+              if btnp(🅾️) then 
+                  _dtb_l()
+              end 
+          end 
+      end 
+  end 
+end
+--------------------------------
+function dtb_draw(color,sp,x)
+  if #dtb_q>0 then 
+    local z,o 
+    z=#dtb_d 
+    o=0 
+    if dtb_c<z then 
+        o=z-dtb_c 
+    end 
+    if (color==nil) color = 5
+    rectfill(2-1,125-z*8,125-7,125,color)
+    spr(sp,x,77,3,3)
+      
+    if dtb_c>0 and #dtb_d[#dtb_d]==#dtb_q[1][dtb_c] then 
+        brint("\x8e",118-7,120-0,7)
+    end 
+    
+    for i=1,z do 
+        brint(dtb_d[i],4,i*8+119-(z+o)*8,7)
+    end 
+  end 
+end
+--------------------------------
+function dtb_disp(t,c)
+  local s,l,w,h,u
+  s={}
+  l=""
+  w=""
+  h=""
+  u=function()	
+      if #w+#l>29 then 
+        add(s,l) l="" 
+      end 
+      l=l..w
+      w=""
+    end 
 
----- use gttb to practice oop
+  for i=1,#t do
+    h=sub(t,i,i)
+    w=w..h
+    if h==" " then 
+      u()
+    elseif #w>28 then
+      w=w.."-"
+      u()
+    end
+  end
 
----- make laser version
------in _update verify shot loc
------in every frame. basically
------#bltb[1][1] is always 1,
------which means blle={} every
------frame at the end. 
+  u()
 
----- sprite list remake
------we need complete lists of
------entb and bltb
------contains {{{'000','111},
------           {'100','101} }}
+  if l~="" then
+    add(s,l)
+  end
 
----- collision check
------1st chk entb vs wall (f1)
------use or betw flags
------2nd chk bltb vs wall (f1)
------use or betw flags
------3rd chk entb vs bltb (f2)
------use and betw flags
+  add(dtb_q,s)
 
----- make tutorial
+  if c==nil then 
+    c=0 
+  end 
 
----- make front page
-
----- make storyline box
-
----- make sound
+  add(dtb_f,c)
+end
+--------------------------------
+function _dtb_c()
+  dtb_d={}
+  for i=1,dtb_n do
+      add(dtb_d,"")
+  end
+  dtb_c=0
+  dtb_l=0
+end
+--------------------------------
+function _dtb_l()
+  dtb_c+=1
+  for i=1,#dtb_d-1 do
+      dtb_d[i]=dtb_d[i+1]
+  end
+  
+  dtb_d[#dtb_d]=""
+  sfx(12)
+end
+-->8
+------------ sand_ ------------
 function sand_init()
 
   cls()
@@ -847,12 +762,29 @@ function sand_init()
   qc.set_registers(3,3)
   pss = {}
 
-//  entb = {}  egen = true
-//  enmy = {nm=2, s={1,5,3,2}, x={1*8,5*8}, y= 2*8, dy=2.5 }
+--  entb = {}  egen = true
+--  enmy = {nm=2, s={1,5,3,2}, x={1*8,5*8}, y= 2*8, dy=2.5 }
 
   cmps = {s=6, x=3*8, y=14*8}
 
+--  flying stars
+  stars = {}
+ 	for i=1,16 do
+	 	add(stars,{x=rnd(72)+44,
+		 											y=rnd(128),
+			 										d=rnd(2)+1,
+			 										c=rnd(2)+5})
+	 end
+
+--animation test
+-- anitb = {} -- sprites that constitutes the animation
+-- for i=8,13 do add(anitb,i) end
+-- ani_init(anitb, 1, 21)
+
+
+
 end
+-------------------------------
 function sand_update()
 
   local qps = 3-cmps.x/8
@@ -926,9 +858,19 @@ function sand_update()
     end
   end
 
+	 for st in all(stars) do
+	 	st.y+=st.d
+	 	if (st.y>125) st.y=3 st.x=rnd(72)+44
+	 end
+
 end
+-------------------------------
 function sand_draw()
       
+	 for st in all(stars) do
+		 pset(st.x,st.y,st.c)
+		end
+
   map(0,0)
   pal(0,1)
   brint("qc cmp",8,4*8+17,6)
@@ -972,7 +914,7 @@ function sand_draw()
     end
    end
 
-  for i,v in pairs(pss_dec) do print((7-(v-48)/8),8,8*i) end  
+  for i,v in pairs(pss_dec) do print((7-(v-48)/8),8,8*i+80) end  
   
   
   for el in all(bltb) do
@@ -982,9 +924,21 @@ function sand_draw()
    end
   end
   
-end
-------------------------------- 🅾️❎⬇️⬆️⬅️➡️
+--animation test
+--    local ssp=88
+--    if (framecouts%4 < 2) ssp=80
+--    sspr(ssp,8,8,8,64, 64,48,8)
+		-- if	btn(❎) then
+		--  ani_draw(true,64,64)
+--   end
+-- animation lasts for 30 frames for key-holding effects
+--    if menu.fmlast <30 then 
+    --  menu.fmlast+=1
+			-- end
 
+end
+-->8
+------------ surv_ ------------
 function surv_init()
   surv={}
   surv.music = true
@@ -1046,24 +1000,17 @@ function surv_init()
   -- for i=8,13 do add(anitb,i) end
   -- ani_init(anitb, 1, 21)
 
-end
-function surv_update()
---**********************--
-  -- --- enemy generation
-  -- --- provide pse, build entb
-  -- --- clear pse
-  -- if egen then
-  --   pse = {}
-  --   bt = as_bits(flr(rnd(8)),3,"s")
-  --   add(pse,bt)
-  --   bt2= as_bits(flr(rnd(8)),3,"s")
-  --   if (bt2 != bt) add(pse,bt2)  
+  stars = {}
+ 	for i=1,16 do
+	 	add(stars,{x=rnd(72)+44,
+		 											y=rnd(128),
+			 										d=rnd(2)+1,
+			 										c=rnd(2)+5})
+	 end
 
-  --   enle = {s=2,dy=endy,px=pse, y=1*8}
-  --   add(entb,enle)
-  --   egen = false
-  -- end
---**********************--
+end
+-------------------------------
+function surv_update()
 
   -- btn: composer and gates
   local qps = 3-cmps.x/8
@@ -1102,68 +1049,7 @@ function surv_update()
     if (btnp(⬇️)) gttb[qps+1]={} sfx(14) -- press ⬅️➡️ clear gates on the current qubit
   end
 
---**********************--
-  -- if (btnp(❎)) then -- press u then fire
-  --   for i,v in pairs(gttb) do
-  --     for j,u in pairs(v) do
-  --       local ch=sub(u,1,1)
-  --       if ch=="x" then
-  --         qc.x(i-1) 
-  --       elseif ch=="h" then 
-  --         qc.h(i-1)
-  --       elseif ch=="v" then
-  --         local ct = tonum(sub(u,3)) 
-  --         qc.cx(i-1,ct) 
-  --       elseif ch=="c" then 
-  --         local ct = tonum(sub(u,3)) 
-  --         qc.cx(i-1,ct)
-  --       end
-  --     end
-  --   end
 
-  --   pss = qcmeas(qc,3)
-
-  --   fire = true
-  --   qc = quantumcircuit()
-  --   qc.set_registers(3,3) 
-  --   gttb = {{},{},{}}
-  -- end
-    
-  -- if fire then
-  --   blle = {s=  7,dy=bldy,px=pss, y=16*8}
-  --   bltb = {blle}
-  --   fire = false
-  --   hit = true
-  -- end 
-    
-  -- pss = {}
-  -- for i,v in pairs(bltb) do
-  --   pss = v.px//bint2dect({v.px},true)
-  --   if v.y > -8 then
-  --     v.y += v.dy 
-  --   else del(bltb,v)
-  --   end
-  -- end
-    
-  -- pse = {}
-  -- for i,v in pairs(entb) do
-  --   pse = v.px//bint2dect({v.px},true)
-  --   if v.y != nil then
-  --     if v.y < 128-16 then
-  --       v.y += v.dy
-  --     else
-  --       del(entb,v)
-  --       next_y=0 // update laser y
-  --     end
-  --   end
-  --   if pse == pss then
-  --     bug = true
-  --     hit = true
-  --     del(entb,v)
-  --     next_y=0 // update laser y
-  --   end
-  -- end
---**********************--
   if (btnp(❎)) then -- press ❎ then fire/perform qcmeas
     for i,v in pairs(gttb) do
       for j,u in pairs(v) do
@@ -1258,8 +1144,19 @@ function surv_update()
     end
   end
 --**********************--
+
+	 for st in all(stars) do
+	 	st.y+=st.d
+	 	if (st.y>125) st.y=3 st.x=rnd(72)+44
+	 end
+	 
 end
+-------------------------------
 function surv_draw()
+
+	 for st in all(stars) do
+		 pset(st.x,st.y,st.c)
+		end
       
   map(0,0)
   brint("qc cmp",8,4*8+17,6)
@@ -1282,6 +1179,7 @@ function surv_draw()
   brint("missed:",6,104+4,6)
   brint(" "..misscount,6,112+4,7)
 
+
   for i,v in pairs(gttb) do
     for j,u in pairs(v) do
        local ch=sub(u,1,1)
@@ -1297,89 +1195,6 @@ function surv_draw()
     end
    end
   
---**********************--
-  --  -- draw enemy w/ entb
-  --  local vx,vy = {},{}
-  --  for i,v in pairs(entb) do
-  --   for i = 5+1,5+8 do
-  --      spr(3,(i*8+0),v.y)
-  --      next_y = max(next_y,v.y) end
-  
-  --   local sp
-  --   if not hit then
-  --      if fmct%4 < 4\2 then sp=20
-  --      else  sp=4 end
-  --      for i = 5+1,5+8 do
-  --       animisct += 1
-  --       spr(sp,(i*8+0),next_y)
-  --      end
-  --   end
-  
-  --   if animisct >0 then
-  --      miss = false
-  --      animisct = -300
-  --   end
-  
-  --   for j,u in pairs(v.px) do
-  --      v_x = (5+8-bin2dec(u))*8
-  --      spr(v.s,v_x,v.y)
-  --      add(vx,v_x)
-  --   end
-  --  end
-  
-  -- -- local vx1 = max(vx[1],vx[2])
-  -- -- local vx2 = min(vx[1],vx[2])
-  -- -- dis = (vx1-vx2)/8-1
-  -- -- for i = 1,dis do
-  -- --  spr(3,(i*8+vx2),y) end
-  
-  -- -- draw bullets w/ bltb
-  -- ---currently use laser
-  --  bm_x = {}
-  --  for i,v in pairs(bltb) do
-  --   for j,u in pairs(v.px) do
-  --      local v_x = (5+8-bin2dec(u))*8
-  -- --   spr(v.s,v_x,v.y)
-  --      add(bm_x,v_x)
-  --   end
-  --  end
-  
-  --  local sp
-  --  if fmct%4 < 4\2 
-  --   then sp=24
-  --  else  sp=25 
-  --  end
-  --  local d = next_y+6
-  --  for i,v in pairs(bm_x) do
-  --   sspr((sp%16)*8,(sp\16)*8,8,8,v,d,8,115-d)
-  --   sfx(2)
-  --  end
-  
-  -- -- set enemy gen at given frame
-  --  fmct += 1
-  --  if fmct==fmk then 
-  --   fmct=0
-  --   egen=true
-  --  end  
-  
-  -- -- firework animation
-  -- -- fire_ani
-  --  for i = 1,18,3 do
-  --   if fmct%18==i+1 or fmct%18==i+2 or fmct%18==i+3 or fmct%18==i+4 then
-  --      if hit then
-  --       anihitct += 1
-  --       spr(8+flr(i/3),vx[1],d-5)
-  --       spr(8+flr(i/3),vx[2],d-5)
-  --      end
-  --      if anihitct >0 then
-  --       hit = false
-  --       anihitct = -30
-  --      end
-  --   end
-  -- end
---**********************--
---**********************--
-  -- if (btnp(🅾️)) kill = not kill
 
   local excite,exctfl = 0,true
   -- -- local exctct =0
@@ -1399,16 +1214,9 @@ function surv_draw()
             el.x[1]+8,el.y,
             el.x[2]-el.x[1]-8,8,
             exctfl)
-        
-  --			print(el.x[2])
-  --			print(el.x[1])
-  --			print(eld)
-  --			for i=1,eld do
-  --			 spr(3,(i+6)*8,el.y)
-  --			end
       else
         spr(2,el.x[1],el.y)
-    end
+      end
 
     end
 
@@ -1420,12 +1228,9 @@ function surv_draw()
     end
 
 
---**********************--
 end
-------------------------------- 🅾️❎⬇️⬆️⬅️➡️
-
 -->8
------ func_init ----
+------------ _init ------------
 function _init()
 
   music(0,10000)
@@ -1458,9 +1263,10 @@ function _init()
   sand_init()
   surv_init()
 
-poke(0x5f2d,1) end
--->8
----- func__update ----
+--poke(0x5f2d,1) 
+end
+
+--------------------------------
 function _update()
 
   framecouts += 1
@@ -1477,8 +1283,8 @@ function _update()
   end
 
 end
--->8
----- func_draw ----
+
+--------------------------------
 function _draw()
 
   cls()
@@ -1521,7 +1327,38 @@ function _draw()
 -- brint(tutbuttn[1],48,84,7)
 -- draw gate w/ gttb
 
-spr(0,stat(32)-1,stat(33)-1)end
+--spr(0,stat(32)-1,stat(33)-1)
+end
+
+--------------------------------
+
+--todo
+
+----note: data structure
+-- gttb: {{x,h},{c02,v12},{}}
+-- /bt: "111"
+-- pse/pss: {"111","010"}
+-- enle/blle: {s=  7,dy=bldy,
+--            px=pss, y=16*8}
+-- entb/bltb: {enle,enle,enle}
+
+---- use gttb to practice oop
+
+-----in _update verify shot loc
+-----in every frame. basically
+-----#bltb[1][1] is always 1,
+-----which means blle={} every
+-----frame at the end. 
+
+---- make tutorial
+
+---- make storyline box
+
+
+------------------------------- 🅾️❎⬇️⬆️⬅️➡️
+
+
+------------------------------- 🅾️❎⬇️⬆️⬅️➡️
 
 __gfx__
 1111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008a980000000000
@@ -1588,6 +1425,136 @@ __gfx__
 88888400008840008840000000884000884088840000000000000000000000000bbbbb3000000000000000000299292000000000000000000000000000000000
 08848840088884008888884008888400884008840000000000000000000000000fddddf000000000000000000f9999f000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000040020000000000000000000020040000000000000000000000000000000000
+__label__
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000555500000000000000000000000000005555000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000005533555000000000000000000000000555335500000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000055333333333333333333333333333333333333550000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000053332333333333333333333333333333333233350000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000013324333424242424242424242424242333423310000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000011342311000000000000000000000000113243110000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000001300310000000000000000000000000013003100000000000000000005555000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000055335500000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000553333550000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000533423350000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000133243310000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000113423110000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000013003100000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000002222222222222222222222220000022224000222240022400000022224002220022400002222222222222222222222220000000000000000
+00000000000000002424242424242424242424240000224022400022400022400000002240002222022400002424242424242424242424240000000000000000
+00000000000000004242424242424242424242420000224022400022400022400000002240002222222400004242424242424242424242420000000000000000
+00000000000000002424242424242424242424240000224222400022400022400000002240002242222400002424242424242424242424240000000000000000
+00000000000000004242424242424242424242420000222224000022400022400000002240002240222400004242424242424242424242420000000000000000
+00000000000000002222222222222222222222220000022422400222240022222240022224002240022400002222222222222222222222220000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444422422244224222424244444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444244442442424242424244444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444222442442424224422244444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444442442442424242444244444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444224442442244242422244444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+000000000000000044444444f444444444444ff4fff4ff44ff44fff44ff4f4f44444444444444444444444444444444444444444444444440000000000000000
+000000000000000044444444f7f444444444f444f4f4f4f4f4f4f4f4f4f4f4f44444444444444444444444444444444444444444444444440000000000000000
+0000000000000000444444444f7f74444444fff4fff4f4f4f4f4ff44f4f44f444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444477f44444444444f4f4f4f4f4f4f4f4f4f4f4f4f44444444444444444444444444444444444444444444444440000000000000000
+000000000000000044444444f44444444444ff44f4f4f4f4fff4fff4ff44f4f44444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444422424242224242422242424222422242444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444244424242424242442442424424424242444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444222424242244242442442424424422242444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444442424242424222442442224424424242444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444224442242424424422244244222424242224444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444111144444444444444444440000000000000000
+000000000000000044444444444444444444444444444444444444444444444444444444444444444444444441f7144444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444171114444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444111714444444444444444440000000000000000
+00000000000000004444242442242444224444442224444442242224444442222244444422244224444422242221112422242244444444440000000000000000
+00000000000000004444242424242444242444444424444424242424444422444224444442442424444424242444244442442424444444440000000000000000
+00000000000000004444222424242444242444444244444424242244444422424224444442442424444422442244244442442424444444440000000000000000
+00000000000000004444242424242444242444442444444424242424444422444224444442442424444424242444242442442424444444440000000000000000
+00000000000000004444242422442224222444442224444422442424444442222244444442442244444422242224222422242424444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000004444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444440000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000100000010000000000000000000000000000000000555500000000000000000000555500000000000000000000000000
+00000000000000000000000000000000120233010000000000000000000000000000000005533555000000000000000055533550000000000000000000000000
+00000000000000000000000000000000102003310000000000000000000000000000000055333333333333333333333333333355000000000000000000000000
+00000000000000000000000000000000102003310000000000000000000000000000000053332333333333333333333333323335000000000000000000000000
+00000000000000000000000000000000120233010000000000000000000000000000000013324333424242424242424233342331000000000000000000000000
+00000000000000000000000000000000100000010000000000000000000000000000000011342311000000000000000011324311000000000000000000000000
+00000000000000000000000000000000111111110000000000000000000000000000000001300310000000000000000001300310000000000000000000000000
+00000000000000001111111111111111111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000001000000110000001100000010000000000000000000000000000000004024020040240200000000000000000000000000000000000000000
+0000000000000000102002011202330110300001000000000000000000000000000000000024d2000024d2000000000000000000000000000000000000000000
+000000000000000010002001102003311033300100000000000000000000000000000000024d4d40024d4d400000000000000000000000000000000000000000
+00000000000000001002000110200331103003010000000000000000000000000000000004d4d42004d4d4200000000000000000000000000000000000000000
+000000000000000010200201120233011030030100000000000000000000000000000000002d4200002d42000000000000000000000000000000000000000000
+00000000000000001000000110000001100000010000000000000000000000000000000002042040020420400000000000000000000000000000000000000000
+00000000000000001111111111111111111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000002222000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000002222000000000002020200020200000200020002000000000202000002000000000200000000000000000000000000
+00000000000000000000000000000000001111000000000002020200020200000200020002000000000202000002000000000200000000000000000000000000
+0000000000000000000000000000000000f11f000000000002020200020201000201020002010100010202000102010001010200010101000000000000000000
+00000000000000000000000000000000035113300000000002020200020201000201020002010100010202000102010001010200010101000000000000000000
+000000000000000000000000000000000fddddf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000002004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
 __gff__
 0002020101020002000000000000000000000000010000020000000000000000010101010101010101010101010100000101010101010101010101010101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
