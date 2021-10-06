@@ -19,10 +19,10 @@ The idea that I am experimenting is how to represent in-game locations with quan
 
 ![qilin_3](https://user-images.githubusercontent.com/29524895/135960047-1ed86aa1-f085-4c79-8d6d-92b98f925857.gif)
 
+**Make quantum circuit your muscle memory and HAPPY SHOOTING!**
+
 #### Mission of this game and Relevance to the theme QUANTUM DA VINCI
 As an inspiring and pioneering engineer, Da Vinci has inspired artists, architects, and engineers of many disciplines. As NISQ (Noisy-Intermediated-Scale-Quantum) hardware is approaching real applications, we will also need to cultivate our next generation quantum workforce to continue our journey developing a scalable universal quantum computer. In this game I am looking into how to build a game that trains our next generation quantum engineers who are proficient in using quantum circuit composers to come up with quantum circuits mapping to required quantum state combinations. (In the game it's called "Quantum Da Vinci program, QDaV for short." as introduce by our beloved guide Daedalus)
-
-**Make quantum circuit your muscle memory and HAPPY SHOOTING!**
 
 #### More behind the scene
 The measurement part of in this code is designed such that counts won't be too high that user can basically shoot down anything with H gates.
