@@ -13,7 +13,7 @@ As I am improving this game to add the increasing level difficulties, tutorials 
 - A solo game dev done by [Wen-Sen Lu](https://github.com/wslu42) during the [2021 itch.io Online Quantum Game Jam event](https://itch.io/jam/online-quantum-game-jam).
 
 #### Quantum ideas involved in this game
-In this work I implemented randomness, superposition and entanglement through QASM backend (micro-qiskit for LUA, specifically). The user control is just a three-qubit circuit composer with circuit depth = 3, and by using X, H, and CX gates we asked user to come up with states match to the falling enemies.
+In this work I implemented randomness, superposition and entanglement through QASM backend (micro-qiskit for LUA, specifically). The user control is just a three-qubit circuit composer with circuit depth = 3, and by using X, H, and CX gates we asked user to come up with states matching the falling enemies.
 
 The idea that I am experimenting is how to represent in-game locations with quantum states. In Qilin this is realized in controlling where the laser beams are shooting. It requires proficient understanding of 3-qubit states and the player's fast response to put together a quantum circuit which maps to the enemy's location using circuit composer. The goal is simple - shoot down as many as enemies as you can!
 
