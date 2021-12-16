@@ -375,6 +375,70 @@ function elgen(eltype, tbas)
     tbsort(el.x)
     el.y,el.dy = 0,endrop
     el.s = {1,5}
+  elseif eltype=='ghz' then
+    local etb={{48,104},{56,96},
+               {64,88},{72,80}}
+    local x1 = flr(rnd(#etb))+1
+    el.x = etb[x1]
+    el.y,el.dy = 0,endrop
+    el.s = {1,5}
+  elseif eltype=='bell1' then
+    local etb={
+				{48,72}, {48,88}, {48,96},
+    {80,104},{64,104},{56,104},
+    {56,64}, {56,80}, {64,80},
+    {88,96}, {72,88}, {72,88}}
+    local x1 = flr(rnd(#etb))+1
+    el.x = etb[x1]
+    el.y,el.dy = 0,endrop
+    el.s = {1,5}
+  elseif eltype=='bell' then
+    local etb={
+				{56,104}, {64,104}, {80,104}}
+    local x1 = flr(rnd(#etb))+1
+    el.x = etb[x1]
+    el.y,el.dy = 0,endrop
+    el.s = {1,5}
+  elseif eltype=='bell2' then
+    local etb={
+				{48,72}, {48,88}, {48,96},
+    {80,104},{64,104},{56,104}}
+    local x1 = flr(rnd(#etb))+1
+    el.x = etb[x1]
+    el.y,el.dy = 0,endrop
+    el.s = {1,5}
+  elseif eltype=='hada1' then
+    local etb={
+    {48,56},{48,64},{48,80},
+    {64,72},{80,88},{56,72},
+    {80,96},{56,88},{64,96},
+    {96,104},{88,104},{72,104}}
+    local x1 = flr(rnd(#etb))+1
+    el.x = etb[x1]
+    el.y,el.dy = 0,endrop
+    el.s = {1,5}
+  elseif eltype=='hada3' then
+    local etb={
+    {48,56},{48,64},{48,80}}
+    local x1 = flr(rnd(#etb))+1
+    el.x = etb[x1]
+    el.y,el.dy = 0,endrop
+    el.s = {1,5}
+  elseif eltype=='hada2' then
+    local etb={
+    {64,72},{80,88},{56,72},
+    {80,96},{56,88},{64,96}}
+    local x1 = flr(rnd(#etb))+1
+    el.x = etb[x1]
+    el.y,el.dy = 0,endrop
+    el.s = {1,5}
+  elseif eltype=='hada' then
+    local etb={
+    {96,104},{88,104},{72,104}}
+    local x1 = flr(rnd(#etb))+1
+    el.x = etb[x1]
+    el.y,el.dy = 0,endrop
+    el.s = {1,5}
   elseif eltype=='1enemy' then
     local x1 = rintx()
     el.x = {x1}
@@ -443,6 +507,14 @@ function menu_init()
   menu.sel_x = menu.x+menu.m
   menu.sel_y = menu.y+menu.s
   
+  ensel = 1 -- use this to select difficulty
+ 	entbl = {'','1enemy','hada',
+ 													'bell'  ,'ghz'  ,
+ 													'hada1' ,'bell1' ,
+ 													'bell2' ,'2enemy',}
+ 										   
+  hiscore = dget(0)
+  
   anitb = {} -- sprites that constitutes the animation
   for i=8,13 do add(anitb,i) end
   ani_init(anitb, 1, 21)
@@ -504,6 +576,12 @@ function menu_draw()
   for i=11,13 do spr(26,i*8,3.2*8) end
   for i=1,15 do pal(i,i) end
 
+  if (btnp(➡️) and menu.sel_y==menu.y+menu.s*3) ensel+=1
+  if (btnp(⬅️) and menu.sel_y==menu.y+menu.s*3) ensel-=1
+  if (ensel==0) ensel=#entbl
+  if (ensel==#entbl+1) ensel=1
+		enstr = entbl[ensel]
+
   menu_sel_color = 2
   menu_sel_color2= 15 --rmv: after color decided
   menu.offset, menu.sel_color = 0, menu_sel_color
@@ -514,8 +592,9 @@ function menu_draw()
   print('sandbox',   menu.x+menu.m*2+menu.offset, menu.y+menu.s*2, menu.sel_color)
   menu.offset, menu.sel_color = 0, menu_sel_color
   if (menu.sel_y == menu.y+menu.s*3) menu.offset = 4 menu.sel_color = menu_sel_color2
-  print('survivial', menu.x+menu.m*2+menu.offset, menu.y+menu.s*3, menu.sel_color)
-  print(' hold z or 🅾️ to begin', menu.x, menu.y+menu.h-menu.m, menu_sel_color)
+  print('survivial '..enstr, menu.x+menu.m*2+menu.offset, menu.y+menu.s*3, menu.sel_color)
+  print(' hold z(🅾️) to begin', menu.x, menu.y+menu.h-menu.m-8, menu_sel_color)
+  print(' hiscore '..hiscore, menu.x+22, menu.y+menu.h-menu.m+1, menu_sel_color)
 
   spr(menu.sel_sp, menu.sel_x, menu.sel_y)
 
@@ -523,8 +602,8 @@ function menu_draw()
     sfx(2)
     local ssp=88
     if (framecouts%4 < 2) ssp=80
-    sspr(ssp,8,8,8,menu.x+menu.m*2-2, menu.sel_y,48,8)
-    ani_draw(true,menu.x+menu.m*2-2+48,menu.sel_y-1)
+    sspr(ssp,8,8,8,menu.x+menu.m*2-2, menu.sel_y,70,8)
+    ani_draw(true,menu.x+menu.m*2-2+70,menu.sel_y-1)
 
     -- animation lasts for 30 frames for key-holding effects
     if menu.fmlast <30 then 
@@ -1101,10 +1180,15 @@ function surv_update()
   else
     endrop=0.2
   end
+--  endrop=0.7
 
   if fmct%flr(enspcn/endrop)==0 then
-    n = rintx(2,1,1)
-    add(entb,elgen(n..'enemy')) 
+				if enstr=='' then
+	    n = rintx(2,1,1)
+					add(entb,elgen(n..'enemy')) 
+				else
+	    add(entb,elgen(enstr)) 
+	   end
   end
 
   for el in all(entb) do
@@ -1128,6 +1212,7 @@ function surv_update()
       del(ent2,entb[i])
       sfx(3)
       killcount+=1
+      dset(0,killcount)
     end
     end
   end
@@ -1232,6 +1317,8 @@ end
 -->8
 ------------ _init ------------
 function _init()
+
+		cartdata(0)
 
   music(0,10000)
 
