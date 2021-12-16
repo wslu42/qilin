@@ -19,6 +19,7 @@ In this work I implemented randomness, superposition and entanglement through QA
 The idea that I am experimenting is how to represent in-game locations with quantum states. In Qilin this is realized in controlling where the laser beams are shooting. It requires proficient understanding of 3-qubit states and the player's fast response to put together a quantum circuit which maps to the enemy's location using circuit composer. The goal is simple - shoot down as many as enemies as you can!
 
 Build quantum circuit into your muscle memory and HAPPY SHOOTING!
+
 ![qilin_3](https://user-images.githubusercontent.com/29524895/135960047-1ed86aa1-f085-4c79-8d6d-92b98f925857.gif)
 
 #### Mission of this game and Relevance to the theme QUANTUM DA VINCI
